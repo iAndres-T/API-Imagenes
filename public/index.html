@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descarga de Imágenes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 50px;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: green;
+      white-space: pre-wrap;
+      /* Permite que los saltos de línea sean respetados */
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Descarga de Imágenes</h1>
+  <button id="download-btn">Iniciar Descarga</button>
+  <p id="status"></p>
+
+  <script>
+    document.getElementById('download-btn').addEventListener('click', async () => {
+      
+      const statusElement = document.getElementById('status');
+      statusElement.textContent = 'Descargando...\n';
+
+      try {
+        // Realizar la petición de descarga
+        const response = await fetch('/descargar-imagenes');
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        // Leer las actualizaciones de progreso
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          statusElement.textContent += decoder.decode(value);
+        }
+
+        statusElement.textContent = 'Descarga completada';
+      } catch (error) {
+        statusElement.textContent = 'Error en la descarga';
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+
+</html>
